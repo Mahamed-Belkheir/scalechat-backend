@@ -7,11 +7,11 @@ import (
 	db "github.com/Mahamed-Belkheir/scalechat-backend/user_service/db"
 )
 
-type AuthApplication struct {
+type Authentication struct {
 	repository db.UserRepository
 }
 
-func (a AuthApplication) Login(username, password string) (*service.User, error) {
+func (a Authentication) Login(username, password string) (*service.User, error) {
 	user, err := a.repository.GetUserByUsername(username)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching user %w", err)
@@ -26,7 +26,7 @@ func (a AuthApplication) Login(username, password string) (*service.User, error)
 	return user, nil
 }
 
-func (a AuthApplication) Register(username, password string) (*service.User, error) {
+func (a Authentication) Register(username, password string) (*service.User, error) {
 	user, err := a.repository.GetUserByUsername(username)
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to database %w", err)
