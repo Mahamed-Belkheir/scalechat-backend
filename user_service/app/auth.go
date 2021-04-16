@@ -11,6 +11,10 @@ type Authentication struct {
 	repository db.UserRepository
 }
 
+func NewAuthentication(repo db.UserRepository) Authentication {
+	return Authentication{repo}
+}
+
 func (a Authentication) Login(username, password string) (*service.User, error) {
 	user, err := a.repository.GetUserByUsername(username)
 	if err != nil {
