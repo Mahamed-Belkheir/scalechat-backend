@@ -19,7 +19,7 @@ func NewJWT(config service.Config) JWT {
 }
 
 type claim struct {
-	username string
+	Username string
 	jwt.StandardClaims
 }
 
@@ -32,7 +32,7 @@ func (j JWT) sign(user *service.User) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(j.secret)
+	tokenString, err := token.SignedString([]byte(j.secret))
 	if err != nil {
 		return "", fmt.Errorf("error signing token %w", err)
 	}
