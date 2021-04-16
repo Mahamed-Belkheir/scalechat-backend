@@ -1,12 +1,19 @@
 package api
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
 	service "github.com/Mahamed-Belkheir/scalechat-backend/user_service"
 	app "github.com/Mahamed-Belkheir/scalechat-backend/user_service/app"
 )
+
+type result map[string]interface{}
+
+func (r result) serialize() ([]byte, error) {
+	return json.Marshal(r)
+}
 
 func StartWebServer(config service.Config, auth app.Authentication) {
 	jwt := NewJWT(config)
@@ -29,7 +36,14 @@ func StartWebServer(config service.Config, auth app.Authentication) {
 			if err != nil {
 				http.Error(rw, err.Error(), http.StatusInternalServerError)
 			}
-			rw.Write([]byte(token))
+			message, err := result{
+				"status": "success",
+				"token":  token,
+			}.serialize()
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusInternalServerError)
+			}
+			rw.Write(message)
 		} else {
 			http.Error(rw, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -52,7 +66,14 @@ func StartWebServer(config service.Config, auth app.Authentication) {
 			if err != nil {
 				http.Error(rw, err.Error(), http.StatusInternalServerError)
 			}
-			rw.Write([]byte(token))
+			message, err := result{
+				"status": "success",
+				"token":  token,
+			}.serialize()
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusInternalServerError)
+			}
+			rw.Write(message)
 
 		} else {
 			http.Error(rw, "method not allowed", http.StatusMethodNotAllowed)
