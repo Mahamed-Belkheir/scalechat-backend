@@ -23,18 +23,26 @@ func StartWebServer(config service.Config, auth app.Authentication) {
 			username := r.FormValue("username")
 			if username == "" {
 				http.Error(rw, "username is required", http.StatusBadRequest)
+				return
 			}
 			password := r.FormValue("password")
 			if password == "" {
 				http.Error(rw, "password is required", http.StatusBadRequest)
+				return
 			}
 			user, err := auth.Login(username, password)
 			if err != nil {
 				http.Error(rw, err.Error(), http.StatusBadRequest)
+				return
+			}
+			if user == nil {
+				http.Error(rw, "username not found", http.StatusNotFound)
+				return
 			}
 			token, err := jwt.sign(user)
 			if err != nil {
 				http.Error(rw, err.Error(), http.StatusInternalServerError)
+				return
 			}
 			message, err := result{
 				"status": "success",
@@ -42,6 +50,7 @@ func StartWebServer(config service.Config, auth app.Authentication) {
 			}.serialize()
 			if err != nil {
 				http.Error(rw, err.Error(), http.StatusInternalServerError)
+				return
 			}
 			rw.Write(message)
 		} else {
@@ -53,18 +62,22 @@ func StartWebServer(config service.Config, auth app.Authentication) {
 			username := r.FormValue("username")
 			if username == "" {
 				http.Error(rw, "username is required", http.StatusBadRequest)
+				return
 			}
 			password := r.FormValue("password")
 			if password == "" {
 				http.Error(rw, "password is required", http.StatusBadRequest)
+				return
 			}
 			user, err := auth.Register(username, password)
 			if err != nil {
 				http.Error(rw, err.Error(), http.StatusBadRequest)
+				return
 			}
 			token, err := jwt.sign(user)
 			if err != nil {
 				http.Error(rw, err.Error(), http.StatusInternalServerError)
+				return
 			}
 			message, err := result{
 				"status": "success",
@@ -72,6 +85,7 @@ func StartWebServer(config service.Config, auth app.Authentication) {
 			}.serialize()
 			if err != nil {
 				http.Error(rw, err.Error(), http.StatusInternalServerError)
+				return
 			}
 			rw.Write(message)
 
