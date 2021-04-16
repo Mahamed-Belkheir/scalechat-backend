@@ -12,7 +12,7 @@ type User struct {
 	Password string
 }
 
-func (u *User) hash() error {
+func (u *User) Hash() error {
 	password, err := bcrypt.GenerateFromPassword([]byte(u.Password), 8)
 	if err != nil {
 		return fmt.Errorf("error hashing password: %w", err)
@@ -21,7 +21,7 @@ func (u *User) hash() error {
 	return nil
 }
 
-func (u *User) comparePassword(password string) error {
+func (u *User) ComparePassword(password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	if err != nil {
 		return fmt.Errorf("failed password comparsion %w", err)
