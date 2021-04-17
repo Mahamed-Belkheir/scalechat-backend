@@ -4,14 +4,13 @@ import (
 	"fmt"
 
 	service "github.com/Mahamed-Belkheir/scalechat-backend/user_service"
-	db "github.com/Mahamed-Belkheir/scalechat-backend/user_service/db"
 )
 
 type Authentication struct {
-	repository db.UserRepository
+	repository service.IUserRepository
 }
 
-func NewAuthentication(repo db.UserRepository) Authentication {
+func NewAuthentication(repo service.IUserRepository) Authentication {
 	return Authentication{repo}
 }
 

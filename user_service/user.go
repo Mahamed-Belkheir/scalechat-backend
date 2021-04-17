@@ -28,3 +28,9 @@ func (u *User) ComparePassword(password string) error {
 	}
 	return nil
 }
+
+type IUserRepository interface {
+	GetUsers() ([]User, error)
+	GetUserByUsername(username string) (*User, error)
+	AddUser(user User) error
+}

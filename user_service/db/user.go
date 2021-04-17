@@ -16,6 +16,8 @@ type UserRepository struct {
 	addUser         *sql.Stmt
 }
 
+var _ service.IUserRepository = UserRepository{}
+
 func NewUserRepo(conn *sql.DB) UserRepository {
 	var user UserRepository
 	statement := prep(conn)
