@@ -1,7 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE chats (
-    id uuid DEFAULT uuid_generate_v4(),
-    name VARCHAR UNIQUE NOT NULL,
+    name VARCHAR PRIMARY KEY,
     user_id VARCHAR NOT NULL
 );

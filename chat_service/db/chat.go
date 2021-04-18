@@ -25,10 +25,10 @@ func NewChatRepository(conn *sql.DB) ChatRepository {
 		conn: conn,
 	}
 	statement := prep(conn)
-	repo.fetchAll = statement.prepare("SELECT id, name, user_id FROM chats")
-	repo.fetchOne = statement.prepare("SELECT id, name, user_id from chats WHERE id = $1")
+	repo.fetchAll = statement.prepare("SELECT name, user_id FROM chats")
+	repo.fetchOne = statement.prepare("SELECT name, user_id from chats WHERE name = $1")
 	repo.addChat = statement.prepare("INSERT INTO chats(name, user_id) VALUES ($1, $2)")
-	repo.delChat = statement.prepare("DELETE FROM chats WHERE id = $1")
+	repo.delChat = statement.prepare("DELETE FROM chats WHERE name = $1")
 	if statement.err != nil {
 		log.Fatalf("error preparing statements: %v", statement.err)
 	}
@@ -44,8 +44,8 @@ func (c ChatRepository) AddChat(name, userId string) error {
 	return nil
 }
 
-func (c ChatRepository) DelChat(id string) error {
-	_, err := c.delChat.Exec(id)
+func (c ChatRepository) DelChat(name string) error {
+	_, err := c.delChat.Exec(name)
 	if err != nil {
 		return fmt.Errorf("DB Error deleting chat: %w", err)
 	}
@@ -62,7 +62,7 @@ func (c ChatRepository) GetChats() ([]service.Chat, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var chat service.Chat
-		err = rows.Scan(&chat.ID, &chat.Name, &chat.UserID)
+		err = rows.Scan(&chat.Name, &chat.UserID)
 		if err != nil {
 			return nil, fmt.Errorf("DB error scanning chats: %w", err)
 		}
@@ -71,10 +71,10 @@ func (c ChatRepository) GetChats() ([]service.Chat, error) {
 	return results, nil
 }
 
-func (c ChatRepository) GetChatById(id string) (*service.Chat, error) {
+func (c ChatRepository) GetChatByName(name string) (*service.Chat, error) {
 	var chat service.Chat
-	row := c.fetchOne.QueryRow(id)
-	err := row.Scan(&chat.ID, &chat.Name, &chat.UserID)
+	row := c.fetchOne.QueryRow(name)
+	err := row.Scan(&chat.Name, &chat.UserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
