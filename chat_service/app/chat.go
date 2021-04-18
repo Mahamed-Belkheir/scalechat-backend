@@ -24,7 +24,7 @@ func (c ChatControl) AddChat(name, userId string) error {
 		return fmt.Errorf("Error fetching chat: %w", err)
 	}
 	if chat != nil {
-		return fmt.Errorf("Chat name already in use")
+		return fmt.Errorf("chat name already in use")
 	}
 	err = c.repo.AddChat(name, userId)
 	if err != nil {
@@ -33,7 +33,7 @@ func (c ChatControl) AddChat(name, userId string) error {
 	return nil
 }
 
-func (c ChatControl) GetChats(id string) ([]service.Chat, error) {
+func (c ChatControl) GetChats() ([]service.Chat, error) {
 	chats, err := c.repo.GetChats()
 	if err != nil {
 		return nil, fmt.Errorf("Error fetching chats: %w", err)
