@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 
@@ -12,6 +13,7 @@ type ChatRepository struct {
 	conn *sql.DB
 
 	fetchAll *sql.Stmt
+	fetchOne *sql.Stmt
 	addChat  *sql.Stmt
 	delChat  *sql.Stmt
 }
@@ -24,8 +26,9 @@ func NewChatRepository(conn *sql.DB) ChatRepository {
 	}
 	statement := prep(conn)
 	repo.fetchAll = statement.prepare("SELECT id, name, user_id FROM chats")
+	repo.fetchOne = statement.prepare("SELECT id, name, user_id from chats WHERE id = $1")
 	repo.addChat = statement.prepare("INSERT INTO chats(name, user_id) VALUES ($1, $2)")
-	repo.delChat = statement.prepare("DELETE FROM chats WHERE ID = $1")
+	repo.delChat = statement.prepare("DELETE FROM chats WHERE id = $1")
 	if statement.err != nil {
 		log.Fatalf("error preparing statements: %v", statement.err)
 	}
@@ -61,9 +64,22 @@ func (c ChatRepository) GetChats() ([]service.Chat, error) {
 		var chat service.Chat
 		err = rows.Scan(&chat.ID, &chat.Name, &chat.UserID)
 		if err != nil {
-			return nil, fmt.Errorf("DB scanning chats: %w", err)
+			return nil, fmt.Errorf("DB error scanning chats: %w", err)
 		}
 		results = append(results, chat)
 	}
 	return results, nil
+}
+
+func (c ChatRepository) GetChatById(id string) (*service.Chat, error) {
+	var chat service.Chat
+	row := c.fetchOne.QueryRow(id)
+	err := row.Scan(&chat.ID, &chat.Name, &chat.UserID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("DB error fetching chat: %w", err)
+	}
+	return &chat, nil
 }
