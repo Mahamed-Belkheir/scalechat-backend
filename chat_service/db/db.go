@@ -27,7 +27,7 @@ func prep(conn *sql.DB) statementPreparer {
 	}
 }
 
-func (q statementPreparer) prepare(statement string) *sql.Stmt {
+func (q *statementPreparer) prepare(statement string) *sql.Stmt {
 	if q.err != nil {
 		return nil
 	}
