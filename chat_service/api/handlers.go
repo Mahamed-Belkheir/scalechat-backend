@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	app "github.com/Mahamed-Belkheir/scalechat-backend/chat_service/app"
@@ -33,12 +34,17 @@ func (c ChatHandler) getChat(w http.ResponseWriter, r *http.Request) {
 	c.json(chats, w)
 }
 func (c ChatHandler) postChat(userId string, w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	name := r.Form.Get("name")
 	if name == "" {
 		http.Error(w, "name is a required property", http.StatusBadRequest)
 		return
 	}
-	err := c.chatController.AddChat(name, userId)
+	err = c.chatController.AddChat(name, userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -66,7 +72,9 @@ func (c ChatHandler) delChat(userId string, w http.ResponseWriter, r *http.Reque
 func (c ChatHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userId, err := c.jwt.verify(r)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
 	}
 	switch r.Method {
 	case "GET":

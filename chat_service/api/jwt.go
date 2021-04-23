@@ -30,11 +30,11 @@ func (j JWT) verify(req *http.Request) (string, error) {
 	}
 	tokenString = tokenString[7:]
 	token, err := jwt.ParseWithClaims(tokenString, &claim{}, func(t *jwt.Token) (interface{}, error) {
-		return j.secret, nil
+		return []byte(j.secret), nil
 	})
 	if err != nil {
 		return "", err
 	}
-	claims := token.Claims.(claim)
-	return claims.Id, nil
+	claims := token.Claims.(*claim)
+	return claims.Subject, nil
 }
