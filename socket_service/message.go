@@ -4,5 +4,5 @@ type Message struct {
 	UserID    string
 	Room      string
 	Body      string
-	CreatedAt int
+	CreatedAt int64
 }
