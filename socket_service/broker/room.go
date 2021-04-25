@@ -1,6 +1,7 @@
 package broker
 
 import (
+	"log"
 	"sync"
 
 	service "github.com/Mahamed-Belkheir/scalechat-backend/socket_service"
@@ -67,7 +68,7 @@ func (r *rooms) unregister(user string, roomName string) bool {
 	lastSub := false
 	rm, ok := r.rms[roomName]
 	if !ok {
-		// log it
+		log.Printf("error: attempted to unregister nonexisting room %v", roomName)
 		return true
 	}
 	rm.unregister(user)
@@ -83,7 +84,7 @@ func (r *rooms) broadcast(msg service.Message) {
 	defer r.mut.RUnlock()
 	rm, ok := r.rms[msg.Room]
 	if !ok {
-		// log it
+		log.Printf("error: attempted to broadcast to nonexisting room %v", msg.Room)
 		return
 	}
 	rm.broadcast(msg)
