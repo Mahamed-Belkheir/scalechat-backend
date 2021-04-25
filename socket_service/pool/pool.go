@@ -15,6 +15,10 @@ type Pool struct {
 	resetLimit int
 }
 
+func (p *Pool) AddJob(job service.IRunnable) {
+	p.queue <- job
+}
+
 func NewPool(workerSize, queueSize int) Pool {
 	return Pool{
 		workerPool: make(chan chan service.IRunnable, workerSize),
