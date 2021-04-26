@@ -3,17 +3,19 @@ package socket_service
 import "os"
 
 type Config struct {
-	Port   string
-	DBConn string
-	DB     string
-	Secret string
+	Port       string
+	DBConn     string
+	DB         string
+	Secret     string
+	PubSubConn string
 }
 
 func GetConfig() Config {
 	return Config{
-		Port:   os.Getenv("PORT"),
-		DBConn: os.Getenv("DB_CONN"),
-		DB:     os.Getenv("DB"),
-		Secret: os.Getenv("SECRET"),
+		Port:       os.Getenv("PORT"),
+		DBConn:     os.Getenv("DB_CONN"),
+		DB:         os.Getenv("DB"),
+		Secret:     os.Getenv("SECRET"),
+		PubSubConn: os.Getenv("PUBSUB_CONN"),
 	}
 }
