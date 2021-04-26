@@ -9,6 +9,13 @@ type MessageBroker struct {
 	pubsub service.IPubSub
 }
 
+func NewMessageBroker(pubsub service.IPubSub) *MessageBroker {
+	return &MessageBroker{
+		newRooms(),
+		pubsub,
+	}
+}
+
 func (m *MessageBroker) Register(userId, roomName string, ch chan service.Message) {
 	sub := m.rms.register(userId, roomName, ch)
 	if sub {
