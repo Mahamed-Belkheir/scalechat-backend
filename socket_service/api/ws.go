@@ -9,14 +9,23 @@ import (
 	"nhooyr.io/websocket"
 )
 
-type handler struct {
+type wsHandler struct {
 	br     *broker.MessageBroker
 	pool   *pool.Pool
 	config service.Config
 	jwt    JWT
 }
 
-func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func newWSHandler(br *broker.MessageBroker, pool *pool.Pool, config service.Config, jwt JWT) *wsHandler {
+	return &wsHandler{
+		br,
+		pool,
+		config,
+		jwt,
+	}
+}
+
+func (h *wsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	roomName := r.URL.Query().Get("name")
 	if roomName == "" {
 		http.Error(w, "name is a required query parameter", http.StatusBadRequest)
