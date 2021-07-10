@@ -19,8 +19,8 @@ func (p *Pool) AddJob(job service.IRunnable) {
 	p.queue <- job
 }
 
-func NewPool(workerSize, queueSize int) Pool {
-	return Pool{
+func NewPool(workerSize, queueSize int) *Pool {
+	return &Pool{
 		workerPool: make(chan chan service.IRunnable, workerSize),
 		queue:      make(chan service.IRunnable, queueSize),
 		running:    0,
@@ -29,8 +29,8 @@ func NewPool(workerSize, queueSize int) Pool {
 }
 
 func (p *Pool) Start() {
-	log.Printf("info: starting worker pool of size: %v", len(p.workerPool))
-	for i := 0; i < len(p.workerPool); i++ {
+	log.Printf("info: starting worker pool of size: %v", cap(p.workerPool))
+	for i := 0; i < cap(p.workerPool); i++ {
 		p.newWorker(p.workerPool, i+1)
 	}
 	for {
@@ -66,7 +66,7 @@ func (p *Pool) newWorker(workerPool chan chan service.IRunnable, i int) {
 
 func (p *Pool) IsFull() bool {
 	running := atomic.LoadInt64(&p.running)
-	if running >= int64(len(p.queue)) {
+	if running >= int64(cap(p.queue)) {
 		return true
 	}
 	return false
