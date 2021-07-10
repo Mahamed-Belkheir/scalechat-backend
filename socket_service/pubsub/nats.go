@@ -30,7 +30,10 @@ func NewNatsPubSub(config service.Config) *NATSPubSub {
 }
 
 func (n *NATSPubSub) PublishMessage(msg service.Message) {
-	n.conn.Publish(msg.Room, msg)
+	err := n.conn.Publish(msg.Room, msg)
+	if err != nil {
+		log.Printf("error: publishing message: %v, got error: %v", msg, err)
+	}
 }
 
 func (n *NATSPubSub) StartListening(room string, callback func(msg service.Message)) {
