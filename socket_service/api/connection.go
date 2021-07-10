@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"sync"
+	"time"
 
 	service "github.com/Mahamed-Belkheir/scalechat-backend/socket_service"
 	"github.com/Mahamed-Belkheir/scalechat-backend/socket_service/broker"
@@ -65,6 +66,8 @@ func (c *connection) recieve() {
 				return
 			}
 			msg.UserID = c.userId
+			msg.Room = c.roomName
+			msg.CreatedAt = time.Now().Unix()
 			c.br.SendMessage(msg)
 		}
 	}
