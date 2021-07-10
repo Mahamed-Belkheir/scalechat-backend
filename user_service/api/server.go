@@ -52,6 +52,7 @@ func StartWebServer(config service.Config, auth app.Authentication) {
 				http.Error(rw, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			rw.Header().Add("Content-Type", "application/json; charset=utf-8")
 			rw.Write(message)
 		} else {
 			http.Error(rw, "method not allowed", http.StatusMethodNotAllowed)
@@ -87,11 +88,13 @@ func StartWebServer(config service.Config, auth app.Authentication) {
 				http.Error(rw, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			rw.Header().Add("Content-Type", "application/json; charset=utf-8")
 			rw.Write(message)
 
 		} else {
 			http.Error(rw, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+	log.Printf("info: server listening at %v", config.Port)
 	log.Fatal(http.ListenAndServe(config.Port, nil))
 }
