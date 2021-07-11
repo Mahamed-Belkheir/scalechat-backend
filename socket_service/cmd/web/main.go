@@ -16,8 +16,9 @@ func main() {
 	br := broker.NewMessageBroker(pb)
 	pool := pool.NewPool(10, 1000)
 	dbConn := db.GetConnection(config)
-	repo := db.NewMessageRepository(dbConn)
-	sockApp := app.NewSocketApplication(br, repo)
+	messagesRepo := db.NewMessageRepository(dbConn)
+	sockApp := app.NewSocketApplication(br, messagesRepo)
+	msgApp := app.NewMessagesApplication(messagesRepo)
 	go pool.Start()
-	api.StartWebServer(config, sockApp, pool)
+	api.StartWebServer(config, sockApp, msgApp, pool)
 }

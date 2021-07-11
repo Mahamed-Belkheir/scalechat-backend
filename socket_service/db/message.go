@@ -33,10 +33,10 @@ func (m MessageRepository) Add(msg *socket_service.Message) error {
 	return nil
 }
 
-func (m MessageRepository) Delete(id string) error {
+func (m MessageRepository) Delete(id, userId string) error {
 	err := m.conn.Query(
-		"DELETE FROM messages WHERE id = ?",
-		id,
+		"DELETE FROM messages WHERE id = ? AND userId = ?",
+		id, userId,
 	).Exec()
 	if err != nil {
 		return fmt.Errorf("error deleting message: %w", err)
@@ -46,7 +46,7 @@ func (m MessageRepository) Delete(id string) error {
 
 func (m MessageRepository) GetRoomMessages(room string) ([]socket_service.Message, error) {
 	scanner := m.conn.Query(
-		"SELECT ID, Room, Body, UserID, CreatedAt FROM messages WHERE Room = ?",
+		"SELECT ID, Room, Body, UserID, CreatedAt FROM messages WHERE Room=? ALLOW FILTERING",
 		room,
 	).Iter().Scanner()
 	result := []socket_service.Message{}

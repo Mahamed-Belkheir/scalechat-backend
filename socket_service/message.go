@@ -10,6 +10,6 @@ type Message struct {
 
 type IMessageRepository interface {
 	Add(*Message) error
-	GetRoomMessages(string) ([]Message, error)
-	Delete(string) error
+	GetRoomMessages(room string) ([]Message, error)
+	Delete(id, userId string) error
 }
