@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  scylla-1:
+    image: scylladb/scylla
+    container_name: scylla-1
+    ports:
+     - "1001:9042"
+
+  scylla-2:
+    image: scylladb/scylla
+    container_name: scylla-2
+    command: --seeds=scylla-1
+    ports:
+     - "1002:9042"
+
+
+  scylla-3:
+    image: scylladb/scylla
+    container_name: scylla-3
+    command: --seeds=scylla-1
+    ports:
+     - "1003:9042"
