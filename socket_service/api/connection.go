@@ -8,7 +8,7 @@ import (
 	"time"
 
 	service "github.com/Mahamed-Belkheir/scalechat-backend/socket_service"
-	"github.com/Mahamed-Belkheir/scalechat-backend/socket_service/broker"
+	"github.com/Mahamed-Belkheir/scalechat-backend/socket_service/app"
 	"nhooyr.io/websocket"
 	"nhooyr.io/websocket/wsjson"
 )
@@ -17,19 +17,19 @@ type connection struct {
 	userId      string
 	roomName    string
 	con         *websocket.Conn
-	br          *broker.MessageBroker
+	sockApp     app.SocketApplication
 	sendQueue   chan service.Message
 	closeSignal chan bool
 	wg          *sync.WaitGroup
 	once        *sync.Once
 }
 
-func newConnection(userId, roomName string, con *websocket.Conn, br *broker.MessageBroker) connection {
+func newConnection(userId, roomName string, con *websocket.Conn, sockApp app.SocketApplication) connection {
 	return connection{
 		userId,
 		roomName,
 		con,
-		br,
+		sockApp,
 		make(chan service.Message),
 		make(chan bool),
 		&sync.WaitGroup{},
@@ -38,13 +38,13 @@ func newConnection(userId, roomName string, con *websocket.Conn, br *broker.Mess
 }
 
 func (c *connection) exit() {
-	c.br.Unregister(c.userId, c.roomName)
+	c.sockApp.Unregister(c.userId, c.roomName)
 	close(c.closeSignal)
 	close(c.sendQueue)
 }
 
 func (c *connection) Run() {
-	c.br.Register(c.userId, c.roomName, c.sendQueue)
+	c.sockApp.Register(c.userId, c.roomName, c.sendQueue)
 	c.wg.Add(2)
 	go c.recieve()
 	go c.transmit()
@@ -68,7 +68,7 @@ func (c *connection) recieve() {
 			msg.UserID = c.userId
 			msg.Room = c.roomName
 			msg.CreatedAt = time.Now().Unix()
-			c.br.SendMessage(msg)
+			c.sockApp.SendMessage(msg)
 		}
 	}
 }

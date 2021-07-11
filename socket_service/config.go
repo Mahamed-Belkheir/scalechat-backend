@@ -1,20 +1,22 @@
 package socket_service
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 type Config struct {
 	Port       string
-	DBConn     string
-	DB         string
+	Clusters   []string
 	Secret     string
 	PubSubConn string
 }
 
 func GetConfig() Config {
+
 	return Config{
 		Port:       os.Getenv("PORT"),
-		DBConn:     os.Getenv("DB_CONN"),
-		DB:         os.Getenv("DB"),
+		Clusters:   strings.Split(os.Getenv("CLUSTERS"), ","),
 		Secret:     os.Getenv("SECRET"),
 		PubSubConn: os.Getenv("PUBSUB_CONN"),
 	}

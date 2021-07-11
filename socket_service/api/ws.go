@@ -4,21 +4,21 @@ import (
 	"net/http"
 
 	service "github.com/Mahamed-Belkheir/scalechat-backend/socket_service"
-	"github.com/Mahamed-Belkheir/scalechat-backend/socket_service/broker"
+	"github.com/Mahamed-Belkheir/scalechat-backend/socket_service/app"
 	"github.com/Mahamed-Belkheir/scalechat-backend/socket_service/pool"
 	"nhooyr.io/websocket"
 )
 
 type wsHandler struct {
-	br     *broker.MessageBroker
-	pool   *pool.Pool
-	config service.Config
-	jwt    JWT
+	sockApp app.SocketApplication
+	pool    *pool.Pool
+	config  service.Config
+	jwt     JWT
 }
 
-func newWSHandler(br *broker.MessageBroker, pool *pool.Pool, config service.Config, jwt JWT) *wsHandler {
+func newWSHandler(sockApp app.SocketApplication, pool *pool.Pool, config service.Config, jwt JWT) *wsHandler {
 	return &wsHandler{
-		br,
+		sockApp,
 		pool,
 		config,
 		jwt,
@@ -45,6 +45,6 @@ func (h *wsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	work := newConnection(userId, roomName, conn, h.br)
+	work := newConnection(userId, roomName, conn, h.sockApp)
 	h.pool.AddJob(&work)
 }
