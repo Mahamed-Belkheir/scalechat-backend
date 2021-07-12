@@ -1,0 +1,9 @@
+FROM scalechat_base:0.1
+WORKDIR $GOPATH/service
+RUN mkdir user_service
+COPY ./user_service ./user_service
+
+RUN go build -o ./migrate ./user_service/cmd/migrate/main.go
+RUN go build -o ./web ./user_service/cmd/web/main.go
+
+CMD [ "./web" ]
