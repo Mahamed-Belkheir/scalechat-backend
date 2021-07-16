@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: scalechat-user-db
+spec:
+  selector:
+    matchLabels:
+      db: scalechat-user-db
+  serviceName: scalechat-user-db-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        db: scalechat-user-db
+    spec:
+      containers:
+      - name: scalechat-user-db
+        image: postgres:13
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+          name: data
+        volumeMounts:
+        - name: psqldata
+          mountPath: /var/lib/postgresql/data
+        env:
+          - name: "POSTGRES_DATABASE"
+            value: "scalechat_user_db"
+          - name: "POSTGRES_USER"
+            value: "user"
+          - name: "POSTGRES_PASSWORD"
+            value: "password" 
+
+  volumeClaimTemplates:
+  - metadata:
+      name: psqldata
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 250Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "scalechat-user-db-service"
+spec:
+  selector:
+    db: scalechat-user-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: scalechat_user:0.1
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: "PORT"
+              value: "0.0.0.0:80"
+            - name: "DB_CONN"
+              value: "postgres://user:password@scalechat-user-db-service:5432/scalechat_user_db?sslmode=disable"
+            - name: "DB"
+              value: "postgres"
+            - name: "SECRET"
+              value: "somerandomsecretsharedamongservicesreplacewithak8ssecretifyoureusingforproductionbutyoushouldntbecopypastinganythingfromhereanyway"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service-service
+spec:
+  type: NodePort
+  selector:
+    app: user-service
+  ports:
+  - port: 9999
+    targetPort: 80
+    nodePort: 30000
