@@ -37,7 +37,7 @@ func main() {
 		log.Fatalf("failed to make get path %v", err)
 	}
 	p = filepath.ToSlash(p)
-	p = path.Join(p, "migrations")
+	p = path.Join(p, "socket_service", "migrations")
 	m, err := migrate.NewWithDatabaseInstance(
 		fmt.Sprintf("file://%s", p),
 		"cassandra", driver)
@@ -51,9 +51,9 @@ func main() {
 	case "down":
 		err = m.Down()
 	default:
-		log.Fatalf("incorrect command %v", cmd)
+		log.Printf("incorrect command %v", cmd)
 	}
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 }

@@ -6,4 +6,4 @@ COPY ./socket_service ./socket_service
 RUN go build -o ./migrate ./socket_service/cmd/migrate/main.go
 RUN go build -o ./web ./socket_service/cmd/web/main.go
 
-CMD [ "./web" ]
+CMD [ "sh", "-c", "./migrate up && ./web" ]

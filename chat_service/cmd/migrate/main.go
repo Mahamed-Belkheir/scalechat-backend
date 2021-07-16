@@ -10,7 +10,7 @@ import (
 	"github.com/Mahamed-Belkheir/scalechat-backend/chat_service"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/github"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 		log.Fatalf("failed to make get path %v", err)
 	}
 	p = filepath.ToSlash(p)
-	p = path.Join(p, "migrations")
+	p = path.Join(p, "chat_service", "migrations")
 	m, err := migrate.New(
 		fmt.Sprintf("file://%s", p),
 		config.DBConn)
@@ -34,9 +34,9 @@ func main() {
 	case "down":
 		err = m.Down()
 	default:
-		log.Fatalf("incorrect command %v", cmd)
+		log.Printf("incorrect command %v", cmd)
 	}
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 }

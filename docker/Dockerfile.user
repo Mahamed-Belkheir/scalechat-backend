@@ -6,4 +6,4 @@ COPY ./user_service ./user_service
 RUN go build -o ./migrate ./user_service/cmd/migrate/main.go
 RUN go build -o ./web ./user_service/cmd/web/main.go
 
-CMD [ "./web" ]
+CMD [ "sh", "-c", "./migrate up && ./web" ]
