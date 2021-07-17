@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: socket-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: socket-service
+  template:
+    metadata:
+      labels:
+        app: socket-service
+    spec:
+      containers:
+        - name: socket-service
+          image: scalechat_socket:0.1
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: "PORT"
+              value: "0.0.0.0:80"
+            - name: "CLUSTERS"
+              value: "scylla-0.scylla.default.svc.cluster.local,scylla-1.scylla.default.svc.cluster.local,scylla-2.scylla.default.svc.cluster.local"
+            - name: "PUBSUB_CONN"
+              value: "nats:4222"
+            - name: "SECRET"
+              value: "somerandomsecretsharedamongservicesreplacewithak8ssecretifyoureusingforproductionbutyoushouldntbecopypastinganythingfromhereanyway"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: socket-service-service
+spec:
+  type: NodePort
+  selector:
+    app: socket-service
+  ports:
+  - port: 9999
+    targetPort: 80
+    nodePort: 30002
