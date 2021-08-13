@@ -49,5 +49,9 @@ func (a Authentication) Register(username, password string) (*service.User, erro
 	if err != nil {
 		return nil, fmt.Errorf("error saving user to database %w", err)
 	}
-	return &newUser, nil
+	user, err = a.repository.GetUserByUsername(username)
+	if err != nil {
+		return nil, fmt.Errorf("error connecting to database %w", err)
+	}
+	return user, nil
 }
