@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	service "github.com/Mahamed-Belkheir/scalechat-backend/socket_service"
@@ -36,5 +37,6 @@ func (j JWT) verify(req *http.Request) (string, error) {
 		return "", err
 	}
 	claims := token.Claims.(*claim)
+	log.Printf("debug: user connected with claims: %v", claims)
 	return claims.Subject, nil
 }

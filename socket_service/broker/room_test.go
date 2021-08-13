@@ -44,8 +44,8 @@ func TestRoom(t *testing.T) {
 	assert(res1, msg, t)
 	assert(res2, msg, t)
 
-	rm.unregister("1")
-	rm.unregister("2")
+	rm.unregister(ch1)
+	rm.unregister(ch2)
 	assert(rm.isEmpty(), true, t)
 }
 
@@ -78,11 +78,11 @@ func TestRooms(t *testing.T) {
 	assert(res2, msg1, t)
 	assert(res3, msg2, t)
 
-	del := rms.unregister("1", "room1")
+	del := rms.unregister(ch1, "room1")
 	assert(del, false, t)
-	del = rms.unregister("2", "room1")
+	del = rms.unregister(ch2, "room1")
 	assert(del, true, t)
-	del = rms.unregister("3", "room2")
+	del = rms.unregister(ch3, "room2")
 	assert(del, true, t)
 
 }

@@ -44,7 +44,7 @@ func TestBroker(t *testing.T) {
 	br.Register("user2", "room1", ch2)
 
 	br.rms.mut.Lock()
-	assert(br.rms.rms, map[string]*room{"room1": {users: map[string]chan service.Message{"user1": ch1, "user2": ch2}}}, t)
+	assert(br.rms.rms, map[string]*room{"room1": {users: map[chan service.Message]string{ch1: "user1", ch2: "user2"}}}, t)
 	br.rms.mut.Unlock()
 
 	msg1 := service.Message{
@@ -60,8 +60,8 @@ func TestBroker(t *testing.T) {
 
 	assert(res1, msg1, t)
 	assert(res2, msg1, t)
-	br.Unregister("user1", "room1")
-	br.Unregister("user2", "room1")
+	br.Unregister("user1", "room1", ch1)
+	br.Unregister("user2", "room1", ch2)
 
 	br.rms.mut.Lock()
 	assert(br.rms.rms, map[string]*room{}, t)

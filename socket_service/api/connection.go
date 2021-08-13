@@ -38,12 +38,14 @@ func newConnection(userId, roomName string, con *websocket.Conn, sockApp app.Soc
 }
 
 func (c *connection) exit() {
-	c.sockApp.Unregister(c.userId, c.roomName)
+	log.Printf("debug: user %s disconnected from room %s", c.userId, c.roomName)
+	c.sockApp.Unregister(c.userId, c.roomName, c.sendQueue)
 	close(c.closeSignal)
 	close(c.sendQueue)
 }
 
 func (c *connection) Run() {
+	log.Printf("debug: user %s connected to room %s", c.userId, c.roomName)
 	c.sockApp.Register(c.userId, c.roomName, c.sendQueue)
 	c.wg.Add(2)
 	go c.recieve()
@@ -65,6 +67,7 @@ func (c *connection) recieve() {
 				c.once.Do(c.exit)
 				return
 			}
+			log.Printf("debug: user %s sent a message to room %s \n %s", c.userId, c.roomName, msg.Body)
 			msg.UserID = c.userId
 			msg.Room = c.roomName
 			msg.CreatedAt = time.Now().Unix()
@@ -86,6 +89,7 @@ func (c *connection) transmit() {
 				c.once.Do(c.exit)
 				return
 			}
+			log.Printf("debug: sending message to user %s on room %s \n %s", c.userId, c.roomName, msg.Body)
 			c.con.Write(context.Background(), websocket.MessageText, res)
 		}
 	}

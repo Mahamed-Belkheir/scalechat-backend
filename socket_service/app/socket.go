@@ -22,8 +22,8 @@ func (s SocketApplication) Register(userId, roomName string, ch chan socket_serv
 	s.br.Register(userId, roomName, ch)
 }
 
-func (s SocketApplication) Unregister(userId, roomName string) {
-	s.br.Unregister(userId, roomName)
+func (s SocketApplication) Unregister(userId, roomName string, ch chan socket_service.Message) {
+	s.br.Unregister(userId, roomName, ch)
 }
 
 func (s SocketApplication) SendMessage(msg socket_service.Message) {
